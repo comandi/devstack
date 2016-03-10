@@ -1,0 +1,64 @@
+version: "2"
+
+services:
+  php5:
+    image: devstack/php5:latest
+    build: php5/
+    tty: false
+    stdin_open: false
+    restart: always
+    links:
+        - db
+        - mail
+    volumes:
+        - /home/vagrant/src:/var/www
+
+  web:
+    image: nginx:1.9
+    tty: false
+    stdin_open: false
+    restart: always
+    links:
+        - php5
+        - mail
+    ports:
+        - "80:80"
+    volumes:
+        - /home/vagrant/src:/var/www
+        - ./web:/etc/nginx
+
+  db:
+    image: mysql:5.6
+    tty: false
+    stdin_open: false
+    restart: always
+    expose:
+        - 3306
+    environment:
+        MYSQL_ROOT_PASSWORD: "myroot"
+
+  mail:
+    image: whiteplus/mailcatcher:20151120
+    tty: false
+    stdin_open: false
+    restart: always
+    expose:
+      - 1025
+      - 1080
+
+  dnsmasq:
+    image: andyshinn/dnsmasq:2.75
+    tty: false
+    stdin_open: false
+    restart: always
+    ports:
+      - "53:53/udp"
+      - "53:53/tcp"
+    command: "-d -A /my.dev/172.31.255.254"
+
+  registry:
+    image: registry:2.2
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./registry/config.yml:/etc/docker/registry/config.yml

@@ -1,0 +1,7 @@
+/vagrant/.vagrant
+/packer/packer_cache
+*.iso
+*.tar*
+*.box
+/vagrant/docker/web/ssl/ssl.*
+/vagrant/docker/web/ssl/openssl.cnf
